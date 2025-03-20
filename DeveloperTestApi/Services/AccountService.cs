@@ -15,7 +15,7 @@ namespace DeveloperTestApi.Services
                 .Where(a => a.ACC_Parent == null)
                 .Select(a => new AccountSummaryDto
                 {
-                    TopLevelAccount = a.ACC_Number,
+                    TopLevelAccount = a.ACC_Number.Trim(),
                     TotalBalance = CalculateTotalBalance(accountDict, balanceDict, a.ACC_Number)
                 }).ToList();
             return accountSummaryDto;
@@ -33,7 +33,6 @@ namespace DeveloperTestApi.Services
             if (!accountDict.TryGetValue(acc_number, out var account))
                 return null;
 
-            // Create a DTO for the current account.
             var dto = new AccountDetailDto
             {
                 ACC_Number = account.ACC_Number.Trim(),
@@ -55,31 +54,6 @@ namespace DeveloperTestApi.Services
 
             return dto;
         }
-        //private List<Account> GetLeafAccounts(
-        //   Dictionary<string, Account> accountDict, string acc_number)
-        //{
-        //    if (!accountDict.TryGetValue(acc_number, out var account))
-        //        return new List<Account>();
-
-        //    var children = accountDict.Values
-        //        .Where(a => (a.ACC_Parent ?? string.Empty).Trim() == acc_number)
-        //        .ToList();
-
-        //    if (children.Count == 0)
-        //    {
-        //        var leafList = new List<Account> { account };
-        //        return leafList;
-        //    }
-
-
-        //    var result = new List<Account>();
-        //    foreach (var child in children)
-        //    {
-        //        result.AddRange(GetLeafAccounts(accountDict, child.ACC_Number.Trim()));
-        //    }
-
-        //    return result;
-        //}
         private decimal CalculateTotalBalance(Dictionary<string, Account> accountDict, Dictionary<string, decimal> balanceDict, string acc_number)
         {
             if (balanceDict.TryGetValue(acc_number, out var cachedValue))

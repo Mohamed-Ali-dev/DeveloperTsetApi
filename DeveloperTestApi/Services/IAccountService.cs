@@ -1,5 +1,4 @@
 ﻿using DeveloperTestApi.DTOs;
-using DeveloperTestApi.Model;
 
 namespace DeveloperTestApi.Services
 {

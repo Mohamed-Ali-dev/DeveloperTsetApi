@@ -12,6 +12,6 @@ namespace DeveloperTestApi.Model
         [JsonIgnore]
         public Account ParentAccount { get; set; }
         [JsonIgnore]
-        public ICollection<Account> ChildAccounts { get; set; } = new List<Account>();
+        public ICollection<Account> ChildAccounts { get; set; } = [];
     }
 }

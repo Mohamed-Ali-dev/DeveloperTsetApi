@@ -16,7 +16,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IAccountService, AccountService>();
 
 builder.Services.AddControllers();
-builder.Services.AddRazorPages();
 builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
@@ -29,11 +28,6 @@ if (app.Environment.IsDevelopment())
 app.UseRouting();
 app.UseAuthorization();
 
-app.UseEndpoints(endpoints =>
-{
-    ControllerActionEndpointConventionBuilder controllerActionEndpointConventionBuilder = endpoints.MapControllers(); // API endpoints
-    PageActionEndpointConventionBuilder pageActionEndpointConventionBuilder = endpoints.MapRazorPages();   // Add this if using Razor Pages
-});
 app.UseHttpsRedirection();
 
 
