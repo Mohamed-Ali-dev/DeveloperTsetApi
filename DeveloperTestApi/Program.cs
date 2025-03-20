@@ -1,4 +1,5 @@
 using DeveloperTestApi.Data;
+using DeveloperTestApi.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,7 +13,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
+builder.Services.AddScoped<IAccountService, AccountService>();
+
 builder.Services.AddControllers();
+builder.Services.AddRazorPages();
 builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
@@ -22,11 +26,18 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
-
+app.UseRouting();
 app.UseAuthorization();
 
+app.UseEndpoints(endpoints =>
+{
+    ControllerActionEndpointConventionBuilder controllerActionEndpointConventionBuilder = endpoints.MapControllers(); // API endpoints
+    PageActionEndpointConventionBuilder pageActionEndpointConventionBuilder = endpoints.MapRazorPages();   // Add this if using Razor Pages
+});
+app.UseHttpsRedirection();
+
+
 app.MapControllers();
+app.UseStaticFiles();
 
 app.Run();

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DeveloperTestApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250319050555_Initial")]
+    [Migration("20250320091123_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -26,7 +26,7 @@ namespace DeveloperTestApi.Migrations
 
             modelBuilder.Entity("DeveloperTestApi.Model.Account", b =>
                 {
-                    b.Property<string>("ACC_number")
+                    b.Property<string>("ACC_Number")
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)")
                         .HasColumnName("ACC_Number");
@@ -40,7 +40,7 @@ namespace DeveloperTestApi.Migrations
                         .HasColumnType("decimal(20,9")
                         .HasColumnName("Balance");
 
-                    b.HasKey("ACC_number");
+                    b.HasKey("ACC_Number");
 
                     b.HasIndex("ACC_Parent");
 

@@ -1,0 +1,108 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Details</title>
+    <!-- DevExtreme CSS -->
+    <link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/22.2.6/css/dx.light.css">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- DevExtreme JS -->
+    <script src="https://cdn3.devexpress.com/jslib/22.2.6/js/dx.all.js"></script>
+</head>
+<body>
+    <h2>Account Details</h2>
+    <div id="gridContainer"></div>
+
+    <script>
+        $(function () {
+            // Create a DevExtreme CustomStore for top-level accounts.
+            var topLevelAccountsStore = new DevExpress.data.CustomStore({
+                key: "topLevelAccount",
+                load: function () {
+                    return $.getJSON("/api/accounts/top-level")
+                        .then(function (data) {
+                            // Clean up each top-level account number by trimming spaces.
+                            return data.map(function (item) {
+                                return {
+                                    topLevelAccount: item.topLevelAccount.trim(),
+                                    totalBalance: item.totalBalance
+                                };
+                            });
+                        });
+                }
+            });
+
+            // Initialize the dxDataGrid with dynamic data.
+            $("#gridContainer").dxDataGrid({
+                dataSource: topLevelAccountsStore,
+                keyExpr: "topLevelAccount",
+                columns: [
+                    {
+                        dataField: "topLevelAccount",
+                        caption: "Top Level Account",
+                        customizeText: function (cellInfo) {
+                            return cellInfo.value.trim();
+                        }
+                    },
+                    { dataField: "totalBalance", caption: "Total Balance" }
+                ],
+                paging: { pageSize: 10 },
+                filterRow: { visible: true },
+
+                // When a row is double-clicked, call the details API.
+                onRowDblClick: function (e) {
+                    var accNumber = e.data.topLevelAccount;
+                    if (!accNumber) return;
+
+                    $.ajax({
+                        url: "/api/accounts/details/" + encodeURIComponent(accNumber.trim()),
+                        type: "GET",
+                        success: function (data) {
+                            console.log("API response:", data);
+
+                            // Build the message using only the paths that lead to a leaf.
+                            var message = ``;
+                            message += buildLeafPaths(data, ""); // Start with an empty prefix
+
+                            DevExpress.ui.dialog.custom({
+                                title: "Details",
+                                messageHtml: message,
+                                buttons: [{ text: "OK", onClick: () => true }]
+                            }).show();
+                        },
+                        error: function (xhr, status, error) {
+                            DevExpress.ui.dialog.alert("Error retrieving details: " + error, "Error");
+                        }
+                    });
+                }
+            });
+
+            // Recursive function to build paths only for leaf nodes.
+            // 'accounts': either an array of account objects or a single account object.
+            // 'prefix': the accumulated account number from parent nodes.
+            function buildLeafPaths(accounts, prefix) {
+                // If 'accounts' is not an array, wrap it into one.
+                if (!Array.isArray(accounts)) {
+                    accounts = [accounts];
+                }
+                let html = "";
+                accounts.forEach(function (account) {
+                    const current = account.acC_Number ? account.acC_Number.trim() : "";
+                    // Build the full account number chain.
+                    const fullAccount = prefix ? prefix + "-" + current : current;
+
+                    // If this account has children, recursively process them.
+                    if (account.children && account.children.length > 0) {
+                        html += buildLeafPaths(account.children, fullAccount);
+                    } else {
+                        // Only output if it is a leaf node.
+                        html += "Account " + fullAccount + " = " + account.balance + "<br>";
+                    }
+                });
+                return html;
+            }
+        });
+    </script>
+</body>
+</html>

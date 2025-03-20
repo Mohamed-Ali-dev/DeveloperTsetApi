@@ -14,8 +14,8 @@ namespace DeveloperTestApi.Data
             modelBuilder.Entity<Account>(entity =>
             {
                 entity.ToTable("Accounts");
-                entity.HasKey(e => e.ACC_number);
-                entity.Property(e => e.ACC_number)
+                entity.HasKey(e => e.ACC_Number);
+                entity.Property(e => e. ACC_Number)
                 .HasColumnName("ACC_Number")
                 .HasMaxLength(10)
                 .IsRequired();
